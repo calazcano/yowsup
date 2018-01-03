@@ -247,7 +247,12 @@ class AxolotlSendLayer(AxolotlBaseLayer):
             return self.serializeLocationToProtobuf(mediaNode, message)
         if mediaNode["type"] == "vcard":
             return self.serializeContactToProtobuf(mediaNode, message)
-
+        if mediaNode["type"] == "video":
+            return self.serializeVideoToProtobuf(mediaNode, message)
+        if mediaNode["type"] == "audio":
+            return self.serializeAudioToProtobuf(mediaNode, message)
+        if mediaNode["type"] == "document":
+            return self.serializeDocumentToProtobuf(mediaNode, message)
         return None
 
     def serializeLocationToProtobuf(self, mediaNode, message = None):
@@ -289,11 +294,63 @@ class AxolotlSendLayer(AxolotlBaseLayer):
 
         return m
 
+    def serializeVideoToProtobuf(self,mediaNode, message = None):
+        m = message or Message()
+        video_message = VideoMessage()
+        video_message.url = mediaNode["url"]
+        #video_message.width = int(mediaNode["width"])
+        #video_message.height = int(mediaNode["height"])
+        video_message.mime_type = mediaNode["mimetype"]
+        video_message.file_sha256 = binascii.unhexlify(mediaNode["filehash"].encode())
+        video_message.file_length = int(mediaNode["size"])
+        video_message.media_key = binascii.unhexlify(mediaNode["anu"])
+        #video_message.file_enc_sha256 = binascii.unhexlify(mediaNode["file_enc_sha256"])
+        video_message.caption = mediaNode["caption"] or ""
+        video_message.jpeg_thumbnail = mediaNode.getData()
+        video_message.duration = int(mediaNode["duration"])
+        m.video_message.MergeFrom(video_message)
+
+        return m
+
+    def serializeAudioToProtobuf(self, mediaNode, message=None):
+        m = message or Message()
+        audio_message = AudioMessage()
+        audio_message.url = mediaNode["url"]
+        if 'ogg' in mediaNode["mimetype"]:
+           audio_message.mime_type = "audio/ogg; codecs=opus"
+        else:
+           audio_message.mime_type =  mediaNode["mimetype"]
+        audio_message.file_sha256 = binascii.unhexlify(mediaNode["filehash"].encode())
+        audio_message.file_length = int(mediaNode["size"])
+        audio_message.media_key = binascii.unhexlify(mediaNode["anu"])
+        #audio_message.file_enc_sha256 = binascii.unhexlify(mediaNode["file_enc_sha256"])
+        audio_message.duration = int(mediaNode["duration"])
+        audio_message.unk = 0;
+        m.audio_message.MergeFrom(audio_message)
+
+        return m
+
     def serializeUrlToProtobuf(self, node, message = None):
         pass
 
-    def serializeDocumentToProtobuf(self, node, message = None):
-        pass
+    def serializeDocumentToProtobuf(self, mediaNode, message=None):
+        m = message or Message()
+
+        document_message = DocumentMessage()
+        document_message.url = mediaNode["url"]
+        document_message.mime_type = mediaNode["mimetype"]
+        document_message.title = mediaNode["file"]
+        document_message.file_sha256 = binascii.unhexlify(mediaNode["filehash"].encode())
+        document_message.file_length = int(mediaNode["size"])
+        document_message.media_key = binascii.unhexlify(mediaNode["anu"])
+        document_message.page_count = int(mediaNode["pageCount"]);
+        if "pdf" in mediaNode["mimetype"]:
+            document_message.jpeg_thumbnail = mediaNode.getData()
+        else:
+            document_message.jpeg_thumbnail = b""
+        m.document_message.MergeFrom(document_message)
+
+        return m
 
     def serializeSenderKeyDistributionMessageToProtobuf(self, groupId, senderKeyDistributionMessage, message = None):
         m = message or Message()
