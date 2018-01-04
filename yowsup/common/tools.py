@@ -163,6 +163,12 @@ class MimeTools:
         if mimeType is None:
             raise Exception("Unsupported/unrecognized file type for: "+filepath);
         return mimeType
+    @staticmethod
+    def getExtension(mimetype):
+        ext = mimetypes.guess_extension(mimetype.split(';')[0])
+        if ext is None:
+            raise Exception("Unsupported/unrecognized mimetype: "+mimetype);
+        return ext
 
 class VideoTools:
     @staticmethod

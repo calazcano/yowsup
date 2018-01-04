@@ -67,6 +67,7 @@ class VideoDownloadableMediaMessageProtocolEntity(DownloadableMediaMessageProtoc
         self.vcodec    = vcodec
         self.width     = width
         self.caption   = caption
+        self.cryptKeys = '576861747341707020417564696f204b657973'
 
     def getCaption(self):
         return self.caption
