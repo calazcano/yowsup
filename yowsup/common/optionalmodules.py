@@ -1,7 +1,6 @@
 import importlib
 import logging
 logger = logging.getLogger(__name__)
-from contextlib import contextmanager
 
 class OptionalModule(object):
     def __init__(self, modulename, failMessage = None, require = False):
@@ -46,5 +45,3 @@ class AxolotlOptionalModule(OptionalModule):
 if __name__ == "__main__":
     with PILOptionalModule() as imp:
         imp()
-        print("OK")
-    print("DONE")
