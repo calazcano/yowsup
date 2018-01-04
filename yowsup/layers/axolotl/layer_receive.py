@@ -226,7 +226,6 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
             raise ValueError("Empty message")
 
         if m.HasField("sender_key_distribution_message"):
-            handled = True
             axolotlAddress = AxolotlAddress(encMessageProtocolEntity.getParticipant(False), 0)
             self.handleSenderKeyDistributionMessage(m.sender_key_distribution_message, axolotlAddress)
 
@@ -236,9 +235,6 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
         elif m.HasField("contact_message"):
             handled = True
             self.handleContactMessage(node, m.contact_message)
-        elif m.HasField("url_message"):
-            handled = True
-            self.handleUrlMessage(node, m.url_message)
         elif m.HasField("location_message"):
             handled = True
             self.handleLocationMessage(node, m.location_message)
@@ -284,7 +280,7 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
             "caption": imageMessage.caption,
             "encoding": "raw",
             "file": "enc",
-            "ip": "0",
+            "ip": "0"
         }, data = imageMessage.jpeg_thumbnail)
         messageNode.addChild(mediaNode)
 

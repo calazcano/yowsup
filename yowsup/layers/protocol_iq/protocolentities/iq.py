@@ -1,6 +1,7 @@
 from yowsup.structs import ProtocolEntity, ProtocolTreeNode
-class IqProtocolEntity(ProtocolEntity):
 
+
+class IqProtocolEntity(ProtocolEntity):
     '''
     <iq type="{{get | set}}" id="{{id}}" xmlns="{{xmlns}}" to="{{TO}}" from="{{FROM}}">
     </iq>
@@ -10,12 +11,14 @@ class IqProtocolEntity(ProtocolEntity):
     TYPE_GET = "get"
     TYPE_ERROR = "error"
     TYPE_RESULT = "result"
+    TYPE_DELETE = "delete"
+    TYPES = (TYPE_SET, TYPE_GET, TYPE_RESULT, TYPE_ERROR, TYPE_DELETE)
 
-    TYPES = (TYPE_SET, TYPE_GET, TYPE_RESULT, TYPE_ERROR)
-    def __init__(self, xmlns = None, _id = None, _type = None, to = None, _from = None):
+    def __init__(self, xmlns=None, _id=None, _type=None, to=None, _from=None):
         super(IqProtocolEntity, self).__init__("iq")
 
-        assert _type in self.__class__.TYPES, "Iq of type %s is not implemented, can accept only (%s)" % (_type," | ".join(self.__class__.TYPES))
+        assert _type in self.__class__.TYPES, "Iq of type %s is not implemented, can accept only (%s)" % (
+        _type, " | ".join(self.__class__.TYPES))
         assert not to or not _from, "Can't set from and to at the same time"
         self._id = self._generateId(True) if _id is None else _id
         self._from = _from
@@ -32,16 +35,16 @@ class IqProtocolEntity(ProtocolEntity):
     def getXmlns(self):
         return self.xmlns
 
-    def getFrom(self, full = True):
+    def getFrom(self, full=True):
         return self._from if full else self._from.split('@')[0]
 
     def getTo(self):
         return self.to
-    
+
     def toProtocolTreeNode(self):
         attribs = {
-            "id"          : self._id,
-            "type"        : self._type
+            "id": self._id,
+            "type": self._type
         }
 
         if self.xmlns:
@@ -52,10 +55,10 @@ class IqProtocolEntity(ProtocolEntity):
         elif self._from:
             attribs["from"] = self._from
 
-        return self._createProtocolTreeNode(attribs, None, data = None)
+        return self._createProtocolTreeNode(attribs, None, data=None)
 
     def __str__(self):
-        out  = "Iq:\n"
+        out = "Iq:\n"
         out += "ID: %s\n" % self._id
         out += "Type: %s\n" % self._type
         if self.xmlns:
@@ -74,4 +77,4 @@ class IqProtocolEntity(ProtocolEntity):
             node.getAttributeValue("type"),
             node.getAttributeValue("to"),
             node.getAttributeValue("from")
-            )
+        )
