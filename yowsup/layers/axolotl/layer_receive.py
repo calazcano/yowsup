@@ -22,6 +22,7 @@ from axolotl.axolotladdress import AxolotlAddress
 from axolotl.groups.senderkeyname import SenderKeyName
 from axolotl.groups.groupsessionbuilder import GroupSessionBuilder
 from axolotl.protocol.senderkeydistributionmessage import SenderKeyDistributionMessage
+from axolotl.ecc.curve import Curve
 
 import binascii
 import logging
@@ -418,6 +419,9 @@ class AxolotlReceivelayer(AxolotlBaseLayer):
 
         onResult = lambda _, __: self.persistKeys(registrationId, identityKeyPair, preKeys, signedPreKey, fresh)
         self._sendIq(setKeysIq, onResult, self.onSentKeysError)
+
+    def onSentKeysError(self, errorNode, keysEntity):
+        raise Exception("Sent keys were not accepted")
 
     def persistKeys(self, registrationId, identityKeyPair, preKeys, signedPreKey, fresh):
         total = len(preKeys)
